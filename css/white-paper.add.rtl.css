@@ -31,20 +31,22 @@ a img{ border:none; }
 ----------------------------------------------------------------------------*/
 
 body {
-  font-family: 'Public Sans', sans-serif;
-  background-color: #f8f8f8;
+  font-family: 'Shippori Mincho B1', sans-serif;
+/*  font-family: 'Public Sans', sans-serif;*/
+/*  background-color: #f8f8f8;*/
+  background-color: #202020;
   font-size: 14.5px;
-  color: #333;
-  text-shadow: 0 1px 0 rgba(255,255,255,1.0);
+  color: #CCC;
+  text-shadow: 0 1px 0 rgba(0,0,0,1.0);
 }
 
 p {
-  color: #222;
+  color: #DDD;
   font-size: 19px;
 }
 
 a.top-link {
-  color: #101010;
+  color: #DDD;
   margin-top: 40px;
   font-size: 70px;
   font-weight: 400;
@@ -53,7 +55,7 @@ a.top-link {
 
 a.top-link:hover {
   text-decoration: none;
-  color: #505050;
+  color: #FFF;
 }
 
 strong {
@@ -61,7 +63,8 @@ strong {
 }
 
 a {
-  color: deepskyblue;
+  /*color: deepskyblue;*/
+  color: #DDD;
   text-decoration: none;
 }
 a:hover {
@@ -70,14 +73,24 @@ a:hover {
 }
 
 hr {
+  margin: 20px auto 25px auto;
+  text-align: center;
+  /*letter-spacing: 3px;*/
+  /*font-size: 20px;*/
+  color: #666;
+  border: solid;
+  border-width:0.5px;
+}
+
+.post hr {
   margin: 20px 0 25px 0;
   text-align: center;
   letter-spacing: 3px;
-  font-size: 20px;
-  color: #ddd;
+  font-size: 40px;
+  color: #444;
   border: none;
 }
-hr:before {
+.post hr:before {
   content: '\2022 \2022 \2022 \2022 \2022';
 }
 
@@ -133,13 +146,13 @@ ul.nav li {
   }
 }
 ul.nav li a {
-  color: #303030;
+  color: #BBB;
   margin-left: 10px;
   text-decoration: none;
   font-weight: 400;
 }
 ul.nav li a:hover {
-  color: #2382c8;
+  color: #FFF;
 }
 
 ul.nav li.logo {
@@ -182,7 +195,7 @@ ul.nav li.logo a {
 .listing .post h2 {
   margin: 0 0 -12px 0;
   font-weight: 400;
-  font-size: 30px;
+  font-size: 50px;
   border: none;
 }
 
@@ -190,12 +203,12 @@ ul.nav li.logo a {
   /* color: #2382c8; */
   color: deepskyblue;
   text-decoration: none;
-  font-size: 30px;
+  font-size: 50px;
   font-weight: 500;
 }
 
 .listing .post h2 i {
-  font-size: 40px;
+  font-size: 50px;
 }
 
 .listing .post .post-summary {
@@ -213,11 +226,11 @@ ul.nav li.logo a {
   font-weight: lighter;
 }
 .listing .post.other h2 a {
-  color: #303030;
+  color: #CCC;
 }
 
 .listing .post.other h2 a:hover {
-  color: #909090;
+  color: #FFF;
 }
 .listing .post.other p:last-child {
   margin-bottom: 0;
@@ -290,7 +303,7 @@ h1.link {
 }
 h1.link .desc {
   font-weight: normal;
-  color: #000;
+  color: #DDD;
 }
 @media only screen and (max-width: 700px) {
   h1 {
@@ -300,14 +313,13 @@ h1.link .desc {
 }
 
 h2 {
-  font-size: 30px;
-  color: #000;
+  font-size: 50px;
+  color: #DDD
 }
-
 h3 {
   margin: 2.0em 0 -0.75em 0;
   font-size: 17px;
-  color: #333;
+  color: #DDD;
 }
 h3 a, h3 a:visited, h2 a, h2 a:visited{ color:#000; }
 h3 a:hover, h2 a:hover{ color:#000; border:none; }
