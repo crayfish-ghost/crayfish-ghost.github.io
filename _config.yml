@@ -1,6 +1,6 @@
-name: "ザリガニの揺れる川"
-description: "ザリガニの揺れる川"
-about: "ザリガニの揺れる川"
+name: "ザリガニ日記"
+description: "ザリガニ日記"
+about: "ザリガニ日記"
 
 master_repo: false
 url: "http://crayfish-ghost.github.io"
@@ -16,7 +16,7 @@ disqus_shortname:
 
 rtl: false
 owner:
-  name:           Urabe Yodogawa. Powered by <a href="https://jekyllrb.com" rel="nofollow" target="_blank" rel="noopener">jekyll</a> & <a href="https://github.com/vinitkumar/white-paper" rel="nofollow" target="_blank" rel="noopener">white-paper</a>.
+  name:           San Yodogawa. Powered by <a href="https://jekyllrb.com" rel="nofollow" target="_blank" rel="noopener">jekyll</a> & <a href="https://github.com/vinitkumar/white-paper" rel="nofollow" target="_blank" rel="noopener">white-paper</a>.
   avatar:         #"https://avatars1.githubusercontent.com/u/537678?s=240&v=4"
   email:          #"vinit1414.08@bitmesra.ac.in"
   # Social networking links used in footer. Update and remove as you like.
