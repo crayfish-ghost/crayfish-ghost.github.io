@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <!-- AndroidでのIME表示時にレイアウト基準を固定 -->
   <meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-content" />
-  <title>フルスクリーン文字表示（改行直前サイズを固定）</title>
+  <title>dekka</title>
   <style>
     :root { --bar-h: 56px; }
     html, body {
@@ -62,7 +62,7 @@
     window.addEventListener('load', () => { entry.focus(); requestFit(); });
 
     function onChange(){
-      display.textContent = entry.value || '入力してください';
+      display.textContent = entry.value || '↓に入力してね';
       requestFit();
     }
 
@@ -78,7 +78,7 @@
     function fit(){
       rafId=null;
 
-      const isPlaceholder = (display.textContent === '入力してください' || display.textContent === '');
+      const isPlaceholder = (display.textContent === '↓に入力してね' || display.textContent === '');
 
       if(isPlaceholder){
         setSingleMode();
@@ -169,7 +169,7 @@
     }
 
     // 初期
-    display.textContent = '入力してください';
+    display.textContent = '↓に入力してね';
     requestFit();
   </script>
 </body>
