@@ -34,3 +34,9 @@ google_verify:
 bing_verify:
 
 include: [".well-known"]
+
+defaults:
+  - scope:
+      path: "raw"     # ←純HTMLを置くフォルダ名
+    values:
+      layout: null
