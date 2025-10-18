@@ -2,32 +2,45 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>フルスクリーン文字表示（PC安定・改行直前サイズ固定）</title>
+  <!-- AndroidでのIME表示時にレイアウト基準を固定 -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-content" />
+  <title>フルスクリーン文字表示（改行直前サイズを固定）</title>
   <style>
-    html, body { height:100%; margin:0; background:#111; color:#fff; font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif; overflow:hidden; -webkit-text-size-adjust:100%; }
+    :root { --bar-h: 56px; }
+    html, body {
+      height:100%; margin:0; background:#111; color:#fff;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;
+      overflow:hidden;
+    }
+    /* 可視領域は常に #display のレイアウト座標を基準に測る */
     #display{
-      position:absolute; inset:0; padding:2vh 2vw;
-      /* モバイルは 100dvh、非モバイルはレイアウト基準でOK */
-      height:100%;
+      position:absolute; left:0; right:0; top:0; bottom:var(--bar-h);
+      padding:2vh 2vw;
       display:flex; align-items:center; justify-content:center;
-      text-align:center; line-height:1.05; overflow:hidden;
+      text-align:center; line-height:1.05;
       white-space:nowrap; user-select:none;
+      box-sizing:border-box;
     }
-    /* Coarse ポインタ（タッチ想定）のときだけ動的ビューポートを採用 */
-    @media (pointer: coarse) {
-      #display{ height:100dvh; }
-      @supports not (height:100dvh){
-        #display{ height:100vh; }
-      }
+    #bar{
+      position:fixed; left:0; right:0; bottom:0;
+      display:flex; gap:8px; padding:10px;
+      background:rgba(0,0,0,.4); backdrop-filter:blur(6px);
+      box-sizing:border-box; height:var(--bar-h);
     }
-    #bar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px; background:rgba(0,0,0,.4); backdrop-filter:blur(6px); box-sizing:border-box; }
-    #entry{ flex:1; font-size:16px; padding:10px 12px; border-radius:8px; border:1px solid #333; color:#fff; background:#1b1b1b; outline:none; }
-    #clear{ padding:10px 14px; border-radius:8px; border:1px solid #333; background:#242424; color:#fff; cursor:pointer; }
+    #entry{
+      flex:1; font-size:16px; /* 16px未満だとモバイルがズームすることがある */
+      padding:10px 12px; border-radius:8px; border:1px solid #333;
+      color:#fff; background:#1b1b1b; outline:none;
+    }
+    #clear{
+      padding:10px 14px; border-radius:8px; border:1px solid #333;
+      background:#242424; color:#fff; cursor:pointer;
+    }
   </style>
 </head>
 <body>
   <div id="display" aria-live="polite">入力してください</div>
+
   <div id="bar">
     <input id="entry" type="text" placeholder="入力すると即時に表示（改行後は直前サイズで固定）" autocomplete="off" />
     <button id="clear" type="button">クリア</button>
@@ -38,25 +51,15 @@
     const entry   = document.getElementById('entry');
     const clearBtn= document.getElementById('clear');
 
-    // モバイル判定は機能検出で。PCでは visualViewport/IME 由来の小ロックを避ける。
-    const isCoarse = matchMedia('(pointer: coarse)').matches;
-    const vv = (isCoarse && window.visualViewport) ? window.visualViewport : null;
-
     // 状態：single=1行、wrap=改行固定
     let mode = 'single';
-    let lockedSize = null; // 改行直前（nowrap）のサイズを保持
+    let lockedSize = null; // 改行直前（nowrap時）のサイズを保存
 
-    entry.addEventListener('input', onChange);
+    entry.addEventListener('input', onChange, { passive:true });
     clearBtn.addEventListener('click', () => { entry.value=''; onChange(); entry.focus(); });
-    window.addEventListener('resize', requestFit);
-    window.addEventListener('orientationchange', requestFit);
-    vv?.addEventListener('resize', requestFit);
-    vv?.addEventListener('scroll', requestFit);
-    window.addEventListener('load', async () => {
-      try { if (document.fonts?.ready) await document.fonts.ready; } catch(e){}
-      entry.focus();
-      requestFit();
-    });
+    window.addEventListener('resize', requestFit, { passive:true });
+    window.addEventListener('orientationchange', requestFit, { passive:true });
+    window.addEventListener('load', () => { entry.focus(); requestFit(); });
 
     function onChange(){
       display.textContent = entry.value || '入力してください';
@@ -64,47 +67,76 @@
     }
 
     let rafId=null;
-    function requestFit(){
-      if(rafId) cancelAnimationFrame(rafId);
-      // 二段rAFでレイアウト安定後に計測
-      rafId = requestAnimationFrame(() => requestAnimationFrame(fit));
-    }
+    function requestFit(){ if(rafId) cancelAnimationFrame(rafId); rafId=requestAnimationFrame(fit); }
 
-    function getBox(){
-      if(vv) return { width: vv.width, height: vv.height };
-      const r = display.getBoundingClientRect();
-      return { width: r.width, height: r.height };
-    }
-
-    function viewportUnstable(){
-      // モバイルのみ。IMEやURLバーで可視領域が大きく縮んだ間はロック更新を禁止
-      return !!vv && vv.height < window.innerHeight * 0.9;
-    }
-
+    // 1行維持の最低サイズの閾値（layout座標系で統一）
     function wrapThresholdPx(){
-      const b = getBox();
-      return Math.min(b.width, b.height) * 0.08; // 短辺の8%
+      const w = display.clientWidth, h = display.clientHeight;
+      return Math.min(w, h) * 0.08;
     }
 
-    function forceReflow(){ void display.offsetWidth; }
+    function fit(){
+      rafId=null;
 
-    function isOverflow(box){
-      return display.scrollWidth > box.width || display.scrollHeight > box.height;
-    }
+      const isPlaceholder = (display.textContent === '入力してください' || display.textContent === '');
 
-    // 収まる最大フォントサイズ（2分探索）
-    function maxFitFontSize(maxTryPx){
-      const box = getBox();
-      let low = 4, high = Math.max(4, maxTryPx);
-      display.style.fontSize = high + 'px';
-      forceReflow();
-      for(let i=0;i<22;i++){
-        const mid = (low + high) / 2;
-        display.style.fontSize = mid + 'px';
-        forceReflow();
-        if (!isOverflow(box)) low = mid; else high = mid;
+      if(isPlaceholder){
+        setSingleMode();
+        const s = Math.min(display.clientWidth, display.clientHeight) * 0.12;
+        display.style.fontSize = Math.floor(s) + 'px';
+        lockedSize = null;
+        mode = 'single';
+        return;
       }
-      return low;
+
+      const threshold = wrapThresholdPx();
+      const maxTry = Math.max(display.clientWidth, display.clientHeight) * 1.2;
+
+      if(mode === 'single'){
+        setSingleMode();
+        const sizeSingle = maxFitFontSize(maxTry); // nowrapでの最大サイズ
+        if(sizeSingle >= threshold){
+          display.style.fontSize = Math.floor(sizeSingle) + 'px';
+          return; // 1行のまま
+        }
+        // 改行へ移行。改行「直前」（=nowrapでの）サイズを固定
+        lockedSize = Math.floor(sizeSingle);
+        setWrapMode();
+        display.style.fontSize = lockedSize + 'px';
+        // 高さが足りない画面リサイズ等では、最低限の縮小のみ許可
+        if (isOverflow()) {
+          const shrink = maxFitFontSize(lockedSize);
+          lockedSize = Math.floor(shrink);
+          display.style.fontSize = lockedSize + 'px';
+        }
+        mode = 'wrap';
+        return;
+      }
+
+      // mode === 'wrap'
+      setWrapMode();
+      if (lockedSize != null) display.style.fontSize = lockedSize + 'px';
+
+      // 画面が小さくなってはみ出す場合のみ縮小（入力増加では拡大しない）
+      if (isOverflow()) {
+        const cur = parseFloat(getComputedStyle(display).fontSize) || lockedSize || 16;
+        const shrink = maxFitFontSize(Math.min(cur, lockedSize ?? cur));
+        lockedSize = Math.floor(shrink);
+        display.style.fontSize = lockedSize + 'px';
+      }
+
+      // 1行復帰可能なら復帰し、以後は再び拡大を許可
+      const saved = display.style.fontSize;
+      setSingleMode();
+      const sizeSingle = maxFitFontSize(maxTry);
+      if(sizeSingle >= threshold){
+        display.style.fontSize = Math.floor(sizeSingle) + 'px';
+        mode = 'single';
+        lockedSize = null;
+        return;
+      }
+      setWrapMode();
+      display.style.fontSize = saved;
     }
 
     function setSingleMode(){
@@ -118,69 +150,22 @@
       display.style.hyphens = 'auto';
     }
 
-    function fit(){
-      const box = getBox();
-      const isPlaceholder = (display.textContent === '入力してください' || display.textContent === '');
-
-      if(isPlaceholder){
-        setSingleMode();
-        const s = Math.min(box.width, box.height) * 0.12;
-        display.style.fontSize = s + 'px';
-        lockedSize = null;
-        mode = 'single';
-        return;
+    // 2分探索で要素が収まる最大フォントサイズ（layout座標系で統一）
+    function maxFitFontSize(maxTryPx){
+      let low = 4, high = Math.max(4, maxTryPx);
+      display.style.fontSize = high + 'px';
+      for(let i=0;i<22;i++){
+        const mid = (low + high) / 2;
+        display.style.fontSize = Math.floor(mid) + 'px';
+        if (!isOverflow()) low = mid; else high = mid;
       }
+      return low;
+    }
 
-      const threshold = wrapThresholdPx();
-      const maxTry = Math.max(box.width, box.height) * 1.2;
-
-      if(mode === 'single'){
-        setSingleMode();
-        const sizeSingle = maxFitFontSize(maxTry); // nowrapでの最大
-        if(sizeSingle >= threshold){
-          display.style.fontSize = Math.floor(sizeSingle) + 'px';
-          return; // 1行継続
-        }
-        // 改行へ移行。改行「直前」のサイズでロック（モバイルの不安定時はロック更新しない）
-        if(!viewportUnstable()) lockedSize = Math.floor(sizeSingle);
-        setWrapMode();
-        display.style.fontSize = (lockedSize ?? Math.floor(sizeSingle)) + 'px';
-
-        // 画面がさらに小さい場合のみ最小限縮小
-        if (isOverflow(box)) {
-          const shrink = maxFitFontSize(lockedSize ?? sizeSingle);
-          lockedSize = Math.floor(shrink);
-          display.style.fontSize = lockedSize + 'px';
-        }
-        mode = 'wrap';
-        return;
-      }
-
-      // mode === 'wrap'（フォントは固定。拡大しない）
-      setWrapMode();
-      if (lockedSize != null) display.style.fontSize = lockedSize + 'px';
-
-      // オーバーフロー時のみ縮小許可
-      if (isOverflow(box)) {
-        const cur = parseFloat(getComputedStyle(display).fontSize) || lockedSize || 16;
-        const shrink = maxFitFontSize(Math.min(cur, lockedSize ?? cur));
-        lockedSize = Math.floor(shrink);
-        display.style.fontSize = lockedSize + 'px';
-      }
-
-      // 1行復帰可能か評価（nowrapで閾値以上）
-      const saved = display.style.fontSize;
-      setSingleMode();
-      const sizeSingle = maxFitFontSize(maxTry);
-      if(sizeSingle >= threshold){
-        display.style.fontSize = Math.floor(sizeSingle) + 'px';
-        mode = 'single';
-        lockedSize = null;
-        return;
-      }
-      // 復帰不可ならwrapに戻す
-      setWrapMode();
-      display.style.fontSize = saved;
+    // layout系（client vs scroll）で比較を統一
+    function isOverflow(){
+      return display.scrollWidth > display.clientWidth ||
+             display.scrollHeight > display.clientHeight;
     }
 
     // 初期
