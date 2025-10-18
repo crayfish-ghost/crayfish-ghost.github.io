@@ -3,18 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>フルスクリーン文字表示（改行直前サイズ固定・Android対策）</title>
+  <title>フルスクリーン文字表示（PC安定・改行直前サイズ固定）</title>
   <style>
     html, body { height:100%; margin:0; background:#111; color:#fff; font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif; overflow:hidden; -webkit-text-size-adjust:100%; }
     #display{
       position:absolute; inset:0; padding:2vh 2vw;
-      height:100dvh;
+      /* モバイルは 100dvh、非モバイルはレイアウト基準でOK */
+      height:100%;
       display:flex; align-items:center; justify-content:center;
       text-align:center; line-height:1.05; overflow:hidden;
       white-space:nowrap; user-select:none;
     }
-    @supports not (height:100dvh){
-      #display{ height:100vh; }
+    /* Coarse ポインタ（タッチ想定）のときだけ動的ビューポートを採用 */
+    @media (pointer: coarse) {
+      #display{ height:100dvh; }
+      @supports not (height:100dvh){
+        #display{ height:100vh; }
+      }
     }
     #bar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px; background:rgba(0,0,0,.4); backdrop-filter:blur(6px); box-sizing:border-box; }
     #entry{ flex:1; font-size:16px; padding:10px 12px; border-radius:8px; border:1px solid #333; color:#fff; background:#1b1b1b; outline:none; }
@@ -32,7 +37,10 @@
     const display = document.getElementById('display');
     const entry   = document.getElementById('entry');
     const clearBtn= document.getElementById('clear');
-    const vv = window.visualViewport || null;
+
+    // モバイル判定は機能検出で。PCでは visualViewport/IME 由来の小ロックを避ける。
+    const isCoarse = matchMedia('(pointer: coarse)').matches;
+    const vv = (isCoarse && window.visualViewport) ? window.visualViewport : null;
 
     // 状態：single=1行、wrap=改行固定
     let mode = 'single';
@@ -58,10 +66,8 @@
     let rafId=null;
     function requestFit(){
       if(rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        // 安定化のため二段rAF
-        requestAnimationFrame(fit);
-      });
+      // 二段rAFでレイアウト安定後に計測
+      rafId = requestAnimationFrame(() => requestAnimationFrame(fit));
     }
 
     function getBox(){
@@ -71,8 +77,8 @@
     }
 
     function viewportUnstable(){
-      // IME/URLバー展開中の極端縮小を検出
-      return vv && vv.height < window.innerHeight * 0.9;
+      // モバイルのみ。IMEやURLバーで可視領域が大きく縮んだ間はロック更新を禁止
+      return !!vv && vv.height < window.innerHeight * 0.9;
     }
 
     function wrapThresholdPx(){
@@ -86,7 +92,7 @@
       return display.scrollWidth > box.width || display.scrollHeight > box.height;
     }
 
-    // 2分探索で収まる最大フォントサイズ
+    // 収まる最大フォントサイズ（2分探索）
     function maxFitFontSize(maxTryPx){
       const box = getBox();
       let low = 4, high = Math.max(4, maxTryPx);
@@ -135,7 +141,7 @@
           display.style.fontSize = Math.floor(sizeSingle) + 'px';
           return; // 1行継続
         }
-        // 改行へ移行。改行「直前」のサイズでロック（不安定時はロック更新しない）
+        // 改行へ移行。改行「直前」のサイズでロック（モバイルの不安定時はロック更新しない）
         if(!viewportUnstable()) lockedSize = Math.floor(sizeSingle);
         setWrapMode();
         display.style.fontSize = (lockedSize ?? Math.floor(sizeSingle)) + 'px';
@@ -150,7 +156,7 @@
         return;
       }
 
-      // mode === 'wrap'（フォントは原則固定。拡大しない）
+      // mode === 'wrap'（フォントは固定。拡大しない）
       setWrapMode();
       if (lockedSize != null) display.style.fontSize = lockedSize + 'px';
 
