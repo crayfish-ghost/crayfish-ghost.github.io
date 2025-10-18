@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>フルスクリーン文字表示（改行直前サイズ固定・Android対策）</title>
+  <style>
+    html, body { height:100%; margin:0; background:#111; color:#fff; font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif; overflow:hidden; -webkit-text-size-adjust:100%; }
+    #display{
+      position:absolute; inset:0; padding:2vh 2vw;
+      height:100dvh;
+      display:flex; align-items:center; justify-content:center;
+      text-align:center; line-height:1.05; overflow:hidden;
+      white-space:nowrap; user-select:none;
+    }
+    @supports not (height:100dvh){
+      #display{ height:100vh; }
+    }
+    #bar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px; background:rgba(0,0,0,.4); backdrop-filter:blur(6px); box-sizing:border-box; }
+    #entry{ flex:1; font-size:16px; padding:10px 12px; border-radius:8px; border:1px solid #333; color:#fff; background:#1b1b1b; outline:none; }
+    #clear{ padding:10px 14px; border-radius:8px; border:1px solid #333; background:#242424; color:#fff; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div id="display" aria-live="polite">入力してください</div>
+  <div id="bar">
+    <input id="entry" type="text" placeholder="入力すると即時に表示（改行後は直前サイズで固定）" autocomplete="off" />
+    <button id="clear" type="button">クリア</button>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const entry   = document.getElementById('entry');
+    const clearBtn= document.getElementById('clear');
+    const vv = window.visualViewport || null;
+
+    // 状態：single=1行、wrap=改行固定
+    let mode = 'single';
+    let lockedSize = null; // 改行直前（nowrap）のサイズを保持
+
+    entry.addEventListener('input', onChange);
+    clearBtn.addEventListener('click', () => { entry.value=''; onChange(); entry.focus(); });
+    window.addEventListener('resize', requestFit);
+    window.addEventListener('orientationchange', requestFit);
+    vv?.addEventListener('resize', requestFit);
+    vv?.addEventListener('scroll', requestFit);
+    window.addEventListener('load', async () => {
+      try { if (document.fonts?.ready) await document.fonts.ready; } catch(e){}
+      entry.focus();
+      requestFit();
+    });
+
+    function onChange(){
+      display.textContent = entry.value || '入力してください';
+      requestFit();
+    }
+
+    let rafId=null;
+    function requestFit(){
+      if(rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        // 安定化のため二段rAF
+        requestAnimationFrame(fit);
+      });
+    }
+
+    function getBox(){
+      if(vv) return { width: vv.width, height: vv.height };
+      const r = display.getBoundingClientRect();
+      return { width: r.width, height: r.height };
+    }
+
+    function viewportUnstable(){
+      // IME/URLバー展開中の極端縮小を検出
+      return vv && vv.height < window.innerHeight * 0.9;
+    }
+
+    function wrapThresholdPx(){
+      const b = getBox();
+      return Math.min(b.width, b.height) * 0.08; // 短辺の8%
+    }
+
+    function forceReflow(){ void display.offsetWidth; }
+
+    function isOverflow(box){
+      return display.scrollWidth > box.width || display.scrollHeight > box.height;
+    }
+
+    // 2分探索で収まる最大フォントサイズ
+    function maxFitFontSize(maxTryPx){
+      const box = getBox();
+      let low = 4, high = Math.max(4, maxTryPx);
+      display.style.fontSize = high + 'px';
+      forceReflow();
+      for(let i=0;i<22;i++){
+        const mid = (low + high) / 2;
+        display.style.fontSize = mid + 'px';
+        forceReflow();
+        if (!isOverflow(box)) low = mid; else high = mid;
+      }
+      return low;
+    }
+
+    function setSingleMode(){
+      display.style.whiteSpace = 'nowrap';
+      display.style.wordBreak = 'normal';
+      display.style.hyphens = 'manual';
+    }
+    function setWrapMode(){
+      display.style.whiteSpace = 'normal';
+      display.style.wordBreak = 'break-word';
+      display.style.hyphens = 'auto';
+    }
+
+    function fit(){
+      const box = getBox();
+      const isPlaceholder = (display.textContent === '入力してください' || display.textContent === '');
+
+      if(isPlaceholder){
+        setSingleMode();
+        const s = Math.min(box.width, box.height) * 0.12;
+        display.style.fontSize = s + 'px';
+        lockedSize = null;
+        mode = 'single';
+        return;
+      }
+
+      const threshold = wrapThresholdPx();
+      const maxTry = Math.max(box.width, box.height) * 1.2;
+
+      if(mode === 'single'){
+        setSingleMode();
+        const sizeSingle = maxFitFontSize(maxTry); // nowrapでの最大
+        if(sizeSingle >= threshold){
+          display.style.fontSize = Math.floor(sizeSingle) + 'px';
+          return; // 1行継続
+        }
+        // 改行へ移行。改行「直前」のサイズでロック（不安定時はロック更新しない）
+        if(!viewportUnstable()) lockedSize = Math.floor(sizeSingle);
+        setWrapMode();
+        display.style.fontSize = (lockedSize ?? Math.floor(sizeSingle)) + 'px';
+
+        // 画面がさらに小さい場合のみ最小限縮小
+        if (isOverflow(box)) {
+          const shrink = maxFitFontSize(lockedSize ?? sizeSingle);
+          lockedSize = Math.floor(shrink);
+          display.style.fontSize = lockedSize + 'px';
+        }
+        mode = 'wrap';
+        return;
+      }
+
+      // mode === 'wrap'（フォントは原則固定。拡大しない）
+      setWrapMode();
+      if (lockedSize != null) display.style.fontSize = lockedSize + 'px';
+
+      // オーバーフロー時のみ縮小許可
+      if (isOverflow(box)) {
+        const cur = parseFloat(getComputedStyle(display).fontSize) || lockedSize || 16;
+        const shrink = maxFitFontSize(Math.min(cur, lockedSize ?? cur));
+        lockedSize = Math.floor(shrink);
+        display.style.fontSize = lockedSize + 'px';
+      }
+
+      // 1行復帰可能か評価（nowrapで閾値以上）
+      const saved = display.style.fontSize;
+      setSingleMode();
+      const sizeSingle = maxFitFontSize(maxTry);
+      if(sizeSingle >= threshold){
+        display.style.fontSize = Math.floor(sizeSingle) + 'px';
+        mode = 'single';
+        lockedSize = null;
+        return;
+      }
+      // 復帰不可ならwrapに戻す
+      setWrapMode();
+      display.style.fontSize = saved;
+    }
+
+    // 初期
+    display.textContent = '入力してください';
+    requestFit();
+  </script>
+</body>
+</html>
