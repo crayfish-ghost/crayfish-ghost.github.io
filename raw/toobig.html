@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>dekka</title>
+  <style>
+    html, body { height:100%; margin:0; background:#111; color:#fff; font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif; overflow:hidden; }
+    #display{
+      position:absolute; inset:0; padding:2vh 2vw;
+      display:flex; align-items:center; justify-content:center;
+      text-align:center; line-height:1.05; overflow:hidden;
+      white-space:nowrap; user-select:none;
+    }
+    #bar{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; padding:10px; background:rgba(0,0,0,.4); backdrop-filter:blur(6px); box-sizing:border-box; }
+    #entry{ flex:1; font-size:16px; padding:10px 12px; border-radius:8px; border:1px solid #333; color:#fff; background:#1b1b1b; outline:none; }
+    #clear{ padding:10px 14px; border-radius:8px; border:1px solid #333; background:#242424; color:#fff; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div id="display" aria-live="polite"></div>
+
+  <div id="bar">
+    <input id="entry" type="text" placeholder="入力すると即時に表示" autocomplete="off" />
+    <button id="clear" type="button">クリア</button>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const entry   = document.getElementById('entry');
+    const clearBtn= document.getElementById('clear');
+
+    // 状態：single=1行、wrap=改行固定
+    let mode = 'single';
+    let lockedSize = null; // 改行直前（nowrap時）のサイズを保存
+
+    entry.addEventListener('input', onChange);
+    clearBtn.addEventListener('click', () => { entry.value=''; onChange(); entry.focus(); });
+    window.addEventListener('resize', onChange);
+    window.addEventListener('orientationchange', onChange);
+    window.addEventListener('load', () => entry.focus());
+
+    function onChange(){
+      display.textContent = entry.value || '↓に入力してね';
+      requestFit();
+    }
+
+    let rafId=null;
+    function requestFit(){ if(rafId) cancelAnimationFrame(rafId); rafId=requestAnimationFrame(fit); }
+
+    // 1行維持の最低サイズの閾値
+    function wrapThresholdPx(box){ return Math.min(box.width, box.height) * 0.08; }
+
+    function fit(){
+      rafId=null;
+      const box = display.getBoundingClientRect();
+      const isPlaceholder = (display.textContent === '↓に入力してね' || display.textContent === '');
+
+      if(isPlaceholder){
+        setSingleMode();
+        const s = Math.min(box.width, box.height) * 0.12;
+        display.style.fontSize = s + 'px';
+        lockedSize = null;
+        mode = 'single';
+        return;
+      }
+
+      const threshold = wrapThresholdPx(box);
+      const maxTry = Math.max(box.width, box.height) * 1.2;
+
+      if(mode === 'single'){
+        setSingleMode();
+        const sizeSingle = maxFitFontSize(box, maxTry); // nowrapでの最大サイズ
+        if(sizeSingle >= threshold){
+          display.style.fontSize = Math.floor(sizeSingle) + 'px';
+          return; // 1行のまま
+        }
+        // 改行へ移行。改行「直前」（=nowrapでの）サイズを固定
+        lockedSize = Math.floor(sizeSingle);
+        setWrapMode();
+        display.style.fontSize = lockedSize + 'px';
+        mode = 'wrap';
+        // 高さが足りない画面リサイズ等では、最低限の縮小のみ許可
+        if (isOverflow(box)) {
+          const shrink = maxFitFontSize(box, lockedSize);
+          lockedSize = Math.floor(shrink);
+          display.style.fontSize = lockedSize + 'px';
+        }
+        return;
+      }
+
+      // mode === 'wrap'
+      setWrapMode();
+      // フォントは固定。増やさない。
+      if (lockedSize != null) display.style.fontSize = lockedSize + 'px';
+
+      // 画面が小さくなってはみ出す場合のみ縮小（入力増加では拡大しない）
+      if (isOverflow(box)) {
+        const cur = parseFloat(getComputedStyle(display).fontSize) || lockedSize || 16;
+        const shrink = maxFitFontSize(box, Math.min(cur, lockedSize ?? cur));
+        lockedSize = Math.floor(shrink);
+        display.style.fontSize = lockedSize + 'px';
+      }
+
+      // 1行復帰可能なら復帰し、以後は再び拡大を許可
+      const saved = display.style.fontSize;
+      setSingleMode();
+      const sizeSingle = maxFitFontSize(box, maxTry);
+      if(sizeSingle >= threshold){
+        display.style.fontSize = Math.floor(sizeSingle) + 'px';
+        mode = 'single';
+        lockedSize = null;
+        return;
+      }
+      setWrapMode();
+      display.style.fontSize = saved;
+    }
+
+    function setSingleMode(){
+      display.style.whiteSpace = 'nowrap';
+      display.style.wordBreak = 'normal';
+      display.style.hyphens = 'manual';
+    }
+    function setWrapMode(){
+      display.style.whiteSpace = 'normal';
+      display.style.wordBreak = 'break-word';
+      display.style.hyphens = 'auto';
+    }
+
+    // 2分探索で要素が収まる最大フォントサイズ
+    function maxFitFontSize(box, maxTryPx){
+      let low = 4, high = Math.max(4, maxTryPx);
+      display.style.fontSize = high + 'px';
+      for(let i=0;i<22;i++){
+        const mid = (low + high) / 2;
+        display.style.fontSize = mid + 'px';
+        if (!isOverflow(box)) low = mid; else high = mid;
+      }
+      return low;
+    }
+
+    function isOverflow(box){
+      return display.scrollWidth > box.width || display.scrollHeight > box.height;
+    }
+
+    // 初期
+    display.textContent = '↓に入力してね';
+    requestFit();
+  </script>
+</body>
+</html>
