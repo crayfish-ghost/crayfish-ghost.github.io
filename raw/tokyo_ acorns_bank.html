@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>東京どんぐり銀行 | どんぐりの未来を預かります。</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="東京どんぐり銀行公式サイト。あなたの大切などんぐりを安全・安心にお預かりし、森の未来へとつなぎます。" />
+  <style>
+    :root {
+      --primary: #3b7d3b;
+      --primary-dark: #2f6130;
+      --accent: #c97b3a;
+      --bg: #f5f7f2;
+      --text: #333;
+      --muted: #777;
+      --border: #e0e4da;
+      --danger: #b33939;
+      --radius: 8px;
+      --shadow-soft: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    header {
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .top-bar {
+      background: var(--primary-dark);
+      color: #fff;
+      font-size: 0.8rem;
+      padding: 4px 16px;
+      text-align: right;
+    }
+
+    .top-bar a {
+      color: #fff;
+      margin-left: 12px;
+      text-decoration: underline;
+    }
+
+    .nav-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #f9e3b0 0, #c97b3a 60%, #5a3b18 100%);
+      box-shadow: 0 0 0 2px #fff, 0 0 6px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 3px solid #2d5e2d;
+      border-top-color: transparent;
+      border-left-color: transparent;
+      top: 2px;
+      left: 6px;
+      transform: rotate(-20deg);
+      opacity: 0.8;
+    }
+
+    .logo-text-main {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .logo-text-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 0.9rem;
+    }
+
+    .nav-links a {
+      font-weight: 500;
+      position: relative;
+      padding-bottom: 2px;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: width 0.2s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 8px 16px;
+      border: 1px solid var(--primary);
+      background: #fff;
+      color: var(--primary-dark);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-muted {
+      border-color: #ccc;
+      color: var(--muted);
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    .hamburger {
+      display: none;
+      border: none;
+      background: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #f7fbf5 0%, #f0f7ec 50%, #fef6ea 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 16px 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      background: #fff;
+      border-radius: 999px;
+      padding: 4px 10px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 12px;
+    }
+
+    .hero-badge span {
+      font-size: 0.95rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.7rem, 3vw, 2.2rem);
+      margin: 0 0 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-title small {
+      display: block;
+      font-size: 0.6em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .hero-lead {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .hero-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .hero-side {
+      position: relative;
+    }
+
+    .hero-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-card-title-badge {
+      font-size: 0.7rem;
+      background: #fdf3d4;
+      color: #8b5a15;
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+
+    .hero-card-metric {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+
+    .hero-card-metric span {
+      font-size: 0.65em;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .hero-card-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .hero-progress {
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-progress-bar {
+      flex: 1;
+      height: 7px;
+      border-radius: 999px;
+      background: #f1f1f1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-progress-bar-inner {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      width: 72%;
+    }
+
+    .hero-acorns {
+      position: absolute;
+      right: -8px;
+      bottom: -12px;
+      width: 120px;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .hero-acorns::before,
+    .hero-acorns::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: radial-gradient(circle at 20% 20%, #f9e3b0 0, #c97b3a 60%, #5a3b18 100%);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .hero-acorns::before {
+      width: 56px;
+      height: 56px;
+      left: 10px;
+      bottom: 20px;
+      transform: rotate(-18deg);
+    }
+
+    .hero-acorns::after {
+      width: 42px;
+      height: 42px;
+      left: 46px;
+      bottom: 10px;
+      transform: rotate(12deg);
+    }
+
+    /* Main layout */
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .section {
+      margin-top: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-left: 4px solid var(--primary);
+      padding-left: 8px;
+    }
+
+    .section-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-header {
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #f3f5f0;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .card-body {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .card-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .card-rate {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .card-footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .card-footer .btn {
+      font-size: 0.8rem;
+      padding: 6px 12px;
+    }
+
+    /* Rate table */
+    .rates-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .rates-table caption {
+      text-align: left;
+      font-weight: 600;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      background: #fafcf7;
+    }
+
+    .rates-table th,
+    .rates-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rates-table th {
+      background: #f3f5f0;
+      text-align: left;
+    }
+
+    .rates-table tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    .rates-note {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* News */
+    .news-list {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 0;
+      font-size: 0.8rem;
+    }
+
+    .news-item {
+      display: flex;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+
+    .news-item:last-child {
+      border-bottom: none;
+    }
+
+    .news-date {
+      white-space: nowrap;
+      color: var(--muted);
+    }
+
+    .news-label {
+      display: inline-block;
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 2px 6px;
+      margin-right: 6px;
+    }
+
+    .news-label-info {
+      background: #e5f1ff;
+      color: #356194;
+    }
+
+    .news-label-important {
+      background: #ffe5e5;
+      color: var(--danger);
+    }
+
+    /* Branch search */
+    .branch-search {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 16px;
+    }
+
+    .branch-search-box {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding: 16px;
+      font-size: 0.85rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .form-row label {
+      font-size: 0.8rem;
+      min-width: 70px;
+      padding-top: 4px;
+    }
+
+    .form-row input,
+    .form-row select {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 0.85rem;
+    }
+
+    .branch-map {
+      background: linear-gradient(135deg, #f7f2e9, #f1f5f0);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .branch-map-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .branch-map-mini {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .branch-map-graphic {
+      border-radius: 10px;
+      background-image:
+        radial-gradient(circle at 20% 20%, #3b7d3b 0, #3b7d3b 40%, transparent 41%),
+        radial-gradient(circle at 60% 55%, #3b7d3b 0, #3b7d3b 40%, transparent 41%),
+        radial-gradient(circle at 80% 30%, #3b7d3b 0, #3b7d3b 40%, transparent 41%);
+      background-color: #d9e3cf;
+      background-repeat: no-repeat;
+      background-size: 50px 50px, 50px 50px, 50px 50px;
+      background-position: 12% 70%, 50% 40%, 80% 20%;
+      height: 120px;
+      position: relative;
+    }
+
+    .branch-map-graphic::after {
+      content: "TOKYO FOREST AREA";
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 0.6rem;
+      color: rgba(0,0,0,0.3);
+      letter-spacing: 0.15em;
+    }
+
+    /* Footer */
+    footer {
+      background: #1f2b21;
+      color: #d7ddd3;
+      font-size: 0.75rem;
+      margin-top: 24px;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 16px 16px 24px;
+      display: grid;
+      grid-template-columns: 2fr 2fr 1.5fr;
+      gap: 20px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .footer-logo .logo-mark {
+      box-shadow: none;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-top: 4px;
+    }
+
+    .footer-links a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-subtitle {
+      font-size: 0.75rem;
+      color: #9ca498;
+    }
+
+    .footer-col-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .footer-notes {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 16px 12px;
+      color: #9ca498;
+      font-size: 0.7rem;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid #2e3a30;
+      margin-top: 8px;
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .copyright {
+      color: #7c8578;
+    }
+
+    .footer-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid #3b4a3f;
+      color: #b5beaf;
+      font-size: 0.7rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 840px) {
+      .hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-side {
+        order: -1;
+      }
+
+      .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .branch-search {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links,
+      .nav-cta {
+        display: none;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .nav-menu-open .nav-links,
+      .nav-menu-open .nav-cta {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        background: #fff;
+        padding: 12px 16px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-inner {
+        padding-top: 16px;
+      }
+
+      .card-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="top-bar">
+      個人のお客さま
+      <a href="#">法人のお客さま</a>
+      <a href="#">採用情報</a>
+      <a href="#">English</a>
+    </div>
+    <div class="nav-inner" id="nav">
+      <div class="logo">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <div>
+          <div class="logo-text-main">東京どんぐり銀行</div>
+          <div class="logo-text-sub">TOKYO ACORN BANK</div>
+        </div>
+      </div>
+      <nav>
+        <button class="hamburger" aria-label="メニュー" id="hamburger">☰</button>
+        <div class="nav-links">
+          <a href="#products">商品・サービス</a>
+          <a href="#rates">どんぐり利率</a>
+          <a href="#news">お知らせ</a>
+          <a href="#branches">店舗・森のATM</a>
+        </div>
+        <div class="nav-cta">
+          <button class="btn btn-muted" title="※ジョークサイトのため実際にはログインできません">
+            <span class="btn-icon">🔒</span>どんぐりダイレクト
+          </button>
+          <button class="btn btn-primary">
+            口座開設（どんぐり）
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">
+          🌳 <span>森にやさしい「資産運用」</span>
+        </div>
+        <h1 class="hero-title">
+          <small>お金じゃなくて、どんぐりで。</small>
+          あなたのどんぐり、<br />森の未来へ預けませんか。
+        </h1>
+        <p class="hero-lead">
+          東京どんぐり銀行は、どんぐりだけをお預かりする架空の銀行です。<br />
+          落ちているどんぐりをそのままにせず、少しだけ未来の森のために使ってみませんか。
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary">
+            どんぐり口座をつくる
+          </button>
+          <button class="btn">
+            初めての方へ
+          </button>
+        </div>
+        <p class="hero-note">
+          ※このサイトはジョークサイトです。実際のお金の預金・送金等は一切できません。
+        </p>
+      </div>
+      <div class="hero-side">
+        <div class="hero-card" aria-label="どんぐり預かり残高のイメージ">
+          <div class="hero-card-title">
+            みんなのどんぐり預かり残高（イメージ）
+            <span class="hero-card-title-badge">森のための預かりサービス</span>
+          </div>
+          <div class="hero-card-metric">
+            12,345,678<span>個</span>
+          </div>
+          <div class="hero-card-sub">
+            どんぐりは、森づくりや生きもののエサとして活用されます。<br />
+            お預けいただいたどんぐりは、スタッフが責任を持って森へとお届けします（という設定です）。
+          </div>
+          <div class="hero-progress">
+            <div>今月の森へのお届け達成率</div>
+            <div class="hero-progress-bar" aria-hidden="true">
+              <div class="hero-progress-bar-inner"></div>
+            </div>
+            <div style="font-size:0.8rem; font-weight:600;">72%</div>
+          </div>
+          <div class="hero-acorns" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <!-- Products -->
+    <section class="section" id="products">
+      <div class="section-header">
+        <h2 class="section-title">商品・サービス</h2>
+        <div class="section-sub">どんぐりならではの預かりサービスをご利用いただけます。</div>
+      </div>
+      <div class="card-grid">
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-tag">個人のお客さま</div>
+              <div class="card-title">どんぐり普通預かり</div>
+            </div>
+            <div class="card-body">
+              いつでも気軽にどんぐりをお預けいただける基本サービスです。<br />
+              公園やお庭で拾ったどんぐりを、そのまま支店窓口にお持ちください（というごっこ遊びをお楽しみください）。
+            </div>
+          </div>
+          <div class="card-meta">
+            <div class="card-rate">手数料：どんぐり 0 個</div>
+            <div>最低預かり数：1 個から</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn">詳しく見る</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-tag">長期預かり</div>
+              <div class="card-title">どんぐり定期預かり（植樹コース）</div>
+            </div>
+            <div class="card-body">
+              一定期間お預かりしたどんぐりをまとめて植樹エリアにまき、森づくりに役立てる想定のコースです。<br />
+              架空の「どんぐり成長ポイント」が貯まり、森の成長を見守る気分を楽しめます。
+            </div>
+          </div>
+          <div class="card-meta">
+            <div class="card-rate">成長ポイント：年率 5.0%（イメージ）</div>
+            <div>預かり期間：1 年〜</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn">詳しく見る</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-tag">こども向け</div>
+              <div class="card-title">どんぐりキッズ口座</div>
+            </div>
+            <div class="card-body">
+              お子さま向けの「どんぐり貯めごっこ」専用口座です。<br />
+              どんぐりを預けるたびにスタンプがたまり、「森の博士バッジ」などの称号（架空）がもらえます。
+            </div>
+          </div>
+          <div class="card-meta">
+            <div class="card-rate">対象年齢：小学生以下（目安）</div>
+            <div>保護者同伴でのご利用推奨</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn">詳しく見る</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Rates -->
+    <section class="section" id="rates">
+      <div class="section-header">
+        <h2 class="section-title">どんぐり利率・ポイント</h2>
+        <div class="section-sub">実際のお金の利息ではなく、「どんぐり成長ポイント」のイメージとなります。</div>
+      </div>
+      <table class="rates-table">
+        <caption>主などんぐり預かりサービスの成長ポイント（イメージ）</caption>
+        <thead>
+          <tr>
+            <th>商品名</th>
+            <th>預かり期間</th>
+            <th>どんぐり成長ポイント（年率換算）</th>
+            <th>ポイント内容</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>どんぐり普通預かり</td>
+            <td>期間の定めなし</td>
+            <td>0.1%</td>
+            <td>預けた個数に応じて、森の写真レポート（っぽいもの）を閲覧できます。</td>
+          </tr>
+          <tr>
+            <td>どんぐり定期預かり（植樹コース）</td>
+            <td>1 年</td>
+            <td>5.0%</td>
+            <td>成長ポイントが一定以上たまると、「苗木 1 本分相当」として表示されます（実際には何も起こりません）。</td>
+          </tr>
+          <tr>
+            <td>どんぐりキッズ口座</td>
+            <td>期間の定めなし</td>
+            <td>10.0%</td>
+            <td>預かりごとにスタンプが加算され、合計に応じた称号が付与されます（ごっこ遊びの範囲です）。</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="rates-note">
+        ※ここで表示している数値は、すべてフィクションです。実際の金利・投資・環境保全活動などとは一切関係ありません。<br />
+        ※真剣な資産運用のご相談は、本物の金融機関等へお問い合わせください。
+      </p>
+    </section>
+
+    <!-- News -->
+    <section class="section" id="news">
+      <div class="section-header">
+        <h2 class="section-title">お知らせ</h2>
+        <div class="section-sub">東京どんぐり銀行からのお知らせです（すべて架空の内容です）。</div>
+      </div>
+      <div class="news-list">
+        <div class="news-item">
+          <div class="news-date">2025.10.01</div>
+          <div>
+            <span class="news-label news-label-important">重要</span>
+            秋の「どんぐり預かり強化月間」開始のお知らせ
+          </div>
+        </div>
+        <div class="news-item">
+          <div class="news-date">2025.09.15</div>
+          <div>
+            <span class="news-label news-label-info">お知らせ</span>
+            台風接近に伴う、森のATM（一部地域）のサービス停止について
+          </div>
+        </div>
+        <div class="news-item">
+          <div class="news-date">2025.08.02</div>
+          <div>
+            <span class="news-label news-label-info">お知らせ</span>
+            「どんぐりキッズ口座」夏休み特別キャンペーンのお知らせ
+          </div>
+        </div>
+        <div class="news-item">
+          <div class="news-date">2025.04.01</div>
+          <div>
+            <span class="news-label news-label-info">お知らせ</span>
+            東京どんぐり銀行ウェブサイトリニューアル（ジョークサイト）のお知らせ
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Branch / ATM -->
+    <section class="section" id="branches">
+      <div class="section-header">
+        <h2 class="section-title">店舗・森のATM</h2>
+        <div class="section-sub">お近くの「どんぐり支店」や「森のATM」（という設定の場所）をお探しいただけます。</div>
+      </div>
+      <div class="branch-search">
+        <div class="branch-search-box">
+          <p style="font-size:0.8rem; margin-top:0;">
+            実際に検索はできませんが、銀行サイトっぽいフォームをお楽しみください。
+          </p>
+          <div class="form-row">
+            <label for="pref">都道府県</label>
+            <select id="pref" name="pref">
+              <option>選択してください</option>
+              <option>東京都</option>
+              <option>神奈川県</option>
+              <option>埼玉県</option>
+              <option>千葉県</option>
+              <option>その他の森のエリア</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="keyword">キーワード</label>
+            <input id="keyword" type="text" placeholder="例）公園名、森の名前など（ごっこ用）" />
+          </div>
+          <div class="form-row">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary" type="button" onclick="alert('これはジョークサイトのため、検索結果は表示されません。')">
+              店舗・森のATMを検索
+            </button>
+          </div>
+        </div>
+        <div class="branch-map">
+          <div class="branch-map-title">森のエリアイメージ</div>
+          <div class="branch-map-mini">
+            緑の丸は、どんぐりを集めやすい（かもしれない）エリアをイメージしています。
+          </div>
+          <div class="branch-map-graphic"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">
+          <div class="logo-mark" aria-hidden="true"></div>
+          <div>
+            <div class="logo-text-main">東京どんぐり銀行</div>
+            <div class="footer-subtitle">お金ではなく、どんぐりを預かる架空の銀行です。</div>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="#">サイトのご利用にあたって</a>
+          <a href="#">どんぐり取扱いポリシー</a>
+          <a href="#">森のプライバシーポリシー</a>
+          <a href="#">お問い合わせ（架空）</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">本サイトについて</div>
+        <p class="footer-subtitle">
+          本サイトはジョークサイトです。<br />
+          実在の銀行・団体・サービスなどとは一切関係ありません。<br />
+          どんぐりは衛生面・安全面に配慮して、現実では適切に取り扱ってください。
+        </p>
+      </div>
+      <div>
+        <div class="footer-col-title">関連リンク（イメージ）</div>
+        <ul style="list-style:none; padding-left:0; margin:4px 0 0;">
+          <li><a href="#">森の環境について学ぶ</a></li>
+          <li><a href="#">どんぐり観察ノート</a></li>
+          <li><a href="#">どんぐりと生きものたち</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-notes">
+      <div class="footer-bottom">
+        <div class="copyright">© Tokyo Acorn Bank（架空）</div>
+        <div class="footer-badges">
+          <div class="badge">SSL（ごっこ）</div>
+          <div class="badge">どんぐりセキュリティチェック済（自称）</div>
+          <div class="badge">森にやさしいデザイン（イメージ）</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // シンプルなハンバーガーメニュー制御
+    (function() {
+      var nav = document.getElementById('nav');
+      var btn = document.getElementById('hamburger');
+      if (!nav || !btn) return;
+      btn.addEventListener('click', function() {
+        var opened = nav.classList.toggle('nav-menu-open');
+        btn.setAttribute('aria-expanded', opened ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>
